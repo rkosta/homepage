@@ -63,6 +63,42 @@ The ConfigMap includes:
 
 ## Deployment
 
+### Configure PiHole API Key
+
+Before deploying, you need to configure the PiHole API key in the secrets file:
+
+1. **Obtain your PiHole API key**:
+   - Log into your PiHole admin interface
+   - Navigate to Settings → API
+   - Copy your API key
+
+2. **Update the secret manifest**:
+
+   Edit [00-homepage-secret.yaml](00-homepage-secret.yaml) and replace `YOUR_API_KEY_HERE` with your actual PiHole API key:
+
+   ```bash
+   # Option 1: Edit the file directly
+   nano 00-homepage-secret.yaml
+   ```
+
+   Or use kubectl to create the secret directly without storing the key in the file:
+
+   ```bash
+   # Option 2: Create the secret from command line
+   kubectl create secret generic homepage-secrets \
+     --from-literal=PIHOLE_API_KEY='your-actual-api-key-here' \
+     --dry-run=client -o yaml | kubectl apply -f -
+   ```
+
+3. **Apply the secret**:
+
+   If you edited the file:
+   ```bash
+   kubectl apply -f 00-homepage-secret.yaml
+   ```
+
+   **Security Note**: Never commit the actual API key to version control. The placeholder value should remain in the repository.
+
 ### Quick Deploy
 
 Deploy all manifests in order:
