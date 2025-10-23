@@ -23,11 +23,11 @@ data:
   services.yaml: |
     - Network Services:
         - PiHole:
-            href: https://pihole/admin
+            href: https://pihole.teamnub.lan/admin
             description: Network-wide ad blocking
             widget:
               type: pihole
-              url: https://192.168.77.11
+              url: https://pihole.teamnub.lan
               version: 6
               key: {{HOMEPAGE_VAR_PIHOLE_API_KEY}}
 
