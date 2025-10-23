@@ -29,6 +29,11 @@ spec:
           env:
             - name: HOMEPAGE_ALLOWED_HOSTS
               value: pikube.teamnub.lan:8080,pikube:8080,homepage.teamnub.lan,homepage
+            - name: HOMEPAGE_VAR_PIHOLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: homepage-secrets
+                  key: PIHOLE_API_KEY
           ports:
             - name: http
               containerPort: 3000

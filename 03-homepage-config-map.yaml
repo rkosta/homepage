@@ -21,6 +21,16 @@ data:
             - abbr: GH
               href: https://github.com/
   services.yaml: |
+    - Network Services:
+        - PiHole:
+            href: https://pihole/admin
+            description: Network-wide ad blocking
+            widget:
+              type: pihole
+              url: https://192.168.77.11
+              version: 6
+              key: {{HOMEPAGE_VAR_PIHOLE_API_KEY}}
+
     - My First Group:
         - My First Service:
             href: http://localhost/
