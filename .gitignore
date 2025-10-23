@@ -1,0 +1,43 @@
+# Kubernetes secrets and sensitive data
+*.secret.yaml
+secrets/
+*-secret.yaml.backup
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+.*.swp
+
+# Helm charts (if added later)
+charts/
+*.tgz
+
+# Kustomize overlays (if added later)
+kustomization.yaml.backup
+
+# Local development
+.env
+.env.local
+kubeconfig
+*.kubeconfig
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Personal notes
+notes.txt
+TODO.md
+NOTES.md
