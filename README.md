@@ -63,9 +63,11 @@ The ConfigMap includes:
 
 ## Deployment
 
-### Configure PiHole API Key
+### Configure Service Credentials
 
-Before deploying, you need to configure the PiHole API key in the secrets file:
+Before deploying, you need to configure the service credentials in the secrets file:
+
+#### PiHole API Key
 
 1. **Obtain your PiHole API key**:
    - Log into your PiHole admin interface
@@ -74,30 +76,41 @@ Before deploying, you need to configure the PiHole API key in the secrets file:
 
 2. **Update the secret manifest**:
 
-   Edit [00-homepage-secret.yaml](00-homepage-secret.yaml) and replace `YOUR_API_KEY_HERE` with your actual PiHole API key:
+   Edit [00-homepage-secret.yaml](00-homepage-secret.yaml) and replace `YOUR_API_KEY_HERE` with your actual PiHole API key.
 
-   ```bash
-   # Option 1: Edit the file directly
-   nano 00-homepage-secret.yaml
-   ```
+#### OpenMediaVault Credentials
 
-   Or use kubectl to create the secret directly without storing the key in the file:
+1. **Obtain your OMV credentials**:
+   - Use your OpenMediaVault admin username (typically `admin`)
+   - Have your OMV admin password ready
 
-   ```bash
-   # Option 2: Create the secret from command line
-   kubectl create secret generic homepage-secrets \
-     --from-literal=PIHOLE_API_KEY='your-actual-api-key-here' \
-     --dry-run=client -o yaml | kubectl apply -f -
-   ```
+2. **Update the secret manifest**:
 
-3. **Apply the secret**:
+   Edit [00-homepage-secret.yaml](00-homepage-secret.yaml) and replace:
+   - `YOUR_OMV_USERNAME_HERE` with your OMV username
+   - `YOUR_OMV_PASSWORD_HERE` with your OMV password
 
-   If you edited the file:
-   ```bash
-   kubectl apply -f 00-homepage-secret.yaml
-   ```
+#### Apply the Secrets
 
-   **Security Note**: Never commit the actual API key to version control. The placeholder value should remain in the repository.
+You have two options to configure the secrets:
+
+**Option 1: Edit the file directly**
+```bash
+nano 00-homepage-secret.yaml
+# Update all placeholder values, then apply:
+kubectl apply -f 00-homepage-secret.yaml
+```
+
+**Option 2: Create the secret from command line** (more secure, doesn't store credentials in files)
+```bash
+kubectl create secret generic homepage-secrets \
+  --from-literal=PIHOLE_API_KEY='your-actual-api-key-here' \
+  --from-literal=OMV_USERNAME='your-omv-username' \
+  --from-literal=OMV_PASSWORD='your-omv-password' \
+  --dry-run=client -o yaml | kubectl apply -f -
+```
+
+**Security Note**: Never commit actual credentials to version control. The placeholder values should remain in the repository.
 
 ### Quick Deploy
 
