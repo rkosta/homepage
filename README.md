@@ -65,58 +65,55 @@ The ConfigMap includes:
 
 ### Configure Service Credentials
 
-Before deploying, you need to configure the service credentials in the secrets file:
+This deployment uses Sealed Secrets for secure credential management. The encrypted secrets are stored in [00-homepage-sealed-secret.yaml](00-homepage-sealed-secret.yaml).
 
-#### PiHole API Key
+#### Understanding Sealed Secrets
 
-1. **Obtain your PiHole API key**:
-   - Log into your PiHole admin interface
+- **SealedSecret**: Encrypted secrets that can be safely stored in version control
+- **Regular Secret**: The [00-homepage-secret.yaml](00-homepage-secret.yaml) file is a template showing the structure but should NOT be applied directly
+- The SealedSecret controller will decrypt and create the actual Secret when applied to the cluster
+
+#### Required Credentials
+
+The following credentials are encrypted in the SealedSecret:
+
+1. **PiHole API Key** (`PIHOLE_API_KEY`)
+   - Obtain from your PiHole admin interface
    - Navigate to Settings → API
-   - Copy your API key
 
-2. **Update the secret manifest**:
+2. **OpenMediaVault Username** (`OMV_USERNAME`)
+   - Typically `admin` or your OMV admin username
 
-   Edit [00-homepage-secret.yaml](00-homepage-secret.yaml) and replace `YOUR_API_KEY_HERE` with your actual PiHole API key.
+3. **OpenMediaVault Password** (`OMV_PASSWORD`)
+   - Your OMV admin password
 
-#### OpenMediaVault Credentials
+#### Updating Secrets
 
-1. **Obtain your OMV credentials**:
-   - Use your OpenMediaVault admin username (typically `admin`)
-   - Have your OMV admin password ready
+If you need to update the credentials, you'll need to:
 
-2. **Update the secret manifest**:
-
-   Edit [00-homepage-secret.yaml](00-homepage-secret.yaml) and replace:
-   - `YOUR_OMV_USERNAME_HERE` with your OMV username
-   - `YOUR_OMV_PASSWORD_HERE` with your OMV password
-
-#### Apply the Secrets
-
-You have two options to configure the secrets:
-
-**Option 1: Edit the file directly**
-```bash
-nano 00-homepage-secret.yaml
-# Update all placeholder values, then apply:
-kubectl apply -f 00-homepage-secret.yaml
-```
-
-**Option 2: Create the secret from command line** (more secure, doesn't store credentials in files)
+1. Create a new sealed secret using `kubeseal`:
 ```bash
 kubectl create secret generic homepage-secrets \
   --from-literal=PIHOLE_API_KEY='your-actual-api-key-here' \
   --from-literal=OMV_USERNAME='your-omv-username' \
   --from-literal=OMV_PASSWORD='your-omv-password' \
-  --dry-run=client -o yaml | kubectl apply -f -
+  --dry-run=client -o yaml | \
+  kubeseal -o yaml > 00-homepage-sealed-secret.yaml
 ```
 
-**Security Note**: Never commit actual credentials to version control. The placeholder values should remain in the repository.
+2. Apply the updated SealedSecret:
+```bash
+kubectl apply -f 00-homepage-sealed-secret.yaml
+```
+
+**Security Note**: The SealedSecret is encrypted specifically for your cluster and can be safely committed to version control. Never commit the unencrypted [00-homepage-secret.yaml](00-homepage-secret.yaml) with actual credentials.
 
 ### Quick Deploy
 
 Deploy all manifests in order:
 
 ```bash
+kubectl apply -f 00-homepage-sealed-secret.yaml
 kubectl apply -f 01-homepage-service-account.yaml
 kubectl apply -f 02-homepage-secret.yaml
 kubectl apply -f 03-homepage-config-map.yaml
