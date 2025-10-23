@@ -31,10 +31,16 @@ data:
               version: 6
               key: {{HOMEPAGE_VAR_PIHOLE_API_KEY}}
 
-    - My First Group:
-        - My First Service:
-            href: http://localhost/
-            description: Homepage is awesome
+    - File Services:
+        - OpenMediaVault:
+            href: http://omv.teamnub.lan/
+            description: Network Attached Storage
+            widget:
+              type: openmediavault
+              url: http://omv.teamnub.lan/
+              username: {{HOMEPAGE_VAR_OMV_USERNAME}}
+              password: {{HOMEPAGE_VAR_OMV_PASSWORD}}
+              method: services.getStatus
 
     - My Second Group:
         - My Second Service:
