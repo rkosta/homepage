@@ -29,17 +29,7 @@ data:
             - abbr: GH
               href: https://github.com/rkosta/homepage
   services.yaml: |
-    # Example service entries referencing Proxmox VMs / LXC containers
-    - VMs:
-      - HomeAssistant:
-          icon: home-assistant.png
-          href: http://haos.teamnub.lan:8123/
-          description: Home automation
-          siteMonitor: http://haos.teamnub.lan:8123/
-          proxmoxNode: pve
-          proxmoxVMID: 102
-          showStats: true
-
+  
     - Network Services:
         - PiHole:
             href: https://pihole.teamnub.lan/admin
@@ -88,6 +78,50 @@ data:
               url: https://pve.teamnub.lan:8006
               username: {{HOMEPAGE_VAR_PROXMOX_USERNAME}}
               password: {{HOMEPAGE_VAR_PROXMOX_PASSWORD}}
+    
+    - VMs:
+      - PiHole:
+          icon: pi-hole.svg
+          href: https://pihole.teamnub.lan/admin
+          description: Network-wide ad blocking
+          siteMonitor: https://pihole.teamnub.lan/admin
+          proxmoxNode: pve
+          proxmoxVMID: 100
+          showStats: true
+      - Open Media Vault::
+          icon: openmediavault.svg
+          href: http://omv.teamnub.lan/
+          description: Network Attached Storage
+          siteMonitor: http://omv.teamnub.lan/
+          proxmoxNode: pve
+          proxmoxVMID: 101
+          showStats: true
+      - HomeAssistant:
+          icon: home-assistant.png
+          href: http://haos.teamnub.lan:8123/
+          description: Home automation
+          siteMonitor: http://haos.teamnub.lan:8123/
+          proxmoxNode: pve
+          proxmoxVMID: 102
+          showStats: true
+
+    - LXCs:
+      - Ollama:
+          icon: ollama.svg
+          description: Local LLMs made easy
+          siteMonitor: http://ollama.teamnub.lan:11434
+          proxmoxNode: pve
+          proxmoxVMID: 107
+          showStats: true
+          proxmoxType: lxc
+      - Open WebUI:
+          description: Web interface for local LLMs
+          href: http://openwebui.teamnub.lan:8080/
+          siteMonitor: http://openwebui.teamnub.lan:8080/
+          proxmoxNode: pve
+          proxmoxVMID: 108
+          showStats: true
+          proxmoxType: lxc
 
   widgets.yaml: |
     - kubernetes:
@@ -109,6 +143,10 @@ data:
         memory: true
         network: default
     - search:
-        provider: duckduckgo
+        provider: google
         target: _blank
+    - datetime:
+        text_size: xl
+        format:
+          timeStyle: short
   docker.yaml: ""
