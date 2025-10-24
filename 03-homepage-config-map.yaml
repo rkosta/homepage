@@ -22,7 +22,7 @@ data:
     - Developer:
         - Github:
             - abbr: GH
-              href: https://github.com/
+              href: https://github.com/rkosta/homepage
   services.yaml: |
     - Network Services:
         - PiHole:
