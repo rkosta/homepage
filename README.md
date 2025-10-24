@@ -18,14 +18,16 @@ The manifests are numbered sequentially to indicate the recommended deployment o
 
 ```
 .
+├── 00-homepage-sealed-secret.yaml        # Sealed Secrets for service credentials
+├── 00-homepage-secret.yaml               # Secret template (DO NOT apply directly)
 ├── 01-homepage-service-account.yaml      # ServiceAccount for Homepage
-├── 02-homepage-secret.yaml                # Service account token secret
-├── 03-homepage-config-map.yaml            # Application configuration
-├── 04-homepage-cluster-role.yaml          # RBAC permissions
-├── 05-homepage-cluster-role-binding.yaml  # Role binding
-├── 06-homepage-service.yaml               # Kubernetes Service
-├── 07-homepage-deployment.yaml            # Application deployment
-└── 08-homepage-ingress.yaml               # Traefik ingress configuration
+├── 02-homepage-secret.yaml               # Service account token secret
+├── 03-homepage-config-map.yaml           # Application configuration
+├── 04-homepage-cluster-role.yaml         # RBAC permissions
+├── 05-homepage-cluster-role-binding.yaml # Role binding
+├── 06-homepage-service.yaml              # Kubernetes Service
+├── 07-homepage-deployment.yaml           # Application deployment
+└── 08-homepage-ingress.yaml              # Traefik ingress configuration
 ```
 
 ## Features
@@ -87,6 +89,23 @@ The following credentials are encrypted in the SealedSecret:
 3. **OpenMediaVault Password** (`OMV_PASSWORD`)
    - Your OMV admin password
 
+4. **Home Assistant Token** (`HA_TOKEN`)
+   - Long-lived access token for Home Assistant API
+   - Generate from your Home Assistant profile settings
+
+#### How to Obtain Home Assistant Token
+
+To generate a long-lived access token for Home Assistant:
+
+1. Log in to your Home Assistant instance
+2. Click on your profile (bottom left corner)
+3. Scroll down to the "Long-Lived Access Tokens" section
+4. Click "Create Token"
+5. Give it a descriptive name (e.g., "Homepage Dashboard")
+6. Copy the generated token immediately (it won't be shown again)
+
+This token will be used in the ConfigMap to authenticate Homepage's requests to Home Assistant's API for displaying sensor data, entity states, and other information.
+
 #### Updating Secrets
 
 If you need to update the credentials, you'll need to:
@@ -97,6 +116,7 @@ kubectl create secret generic homepage-secrets \
   --from-literal=PIHOLE_API_KEY='your-actual-api-key-here' \
   --from-literal=OMV_USERNAME='your-omv-username' \
   --from-literal=OMV_PASSWORD='your-omv-password' \
+  --from-literal=HA_TOKEN='your-home-assistant-token-here' \
   --dry-run=client -o yaml | \
   kubeseal -o yaml > 00-homepage-sealed-secret.yaml
 ```
