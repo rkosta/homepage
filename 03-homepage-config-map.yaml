@@ -44,6 +44,20 @@ data:
               username: {{HOMEPAGE_VAR_OMV_USERNAME}}
               password: {{HOMEPAGE_VAR_OMV_PASSWORD}}
               method: services.getStatus
+    
+    - Other Services:
+        - HomeAssistant:
+            href: http://haos.teamnub.lan:8123/
+            description: Home Automation Platform
+            widget:
+              type: homeassistant
+              url: http://haos.teamnub.lan:8123
+              key: {{HOMEPAGE_VAR_HA_KEY}}
+              custom:
+                - state: sensor.home_assistant_core_cpu_percent
+                  label: CPU Usage
+                - state: sensor.home_assistant_core_memory_percent
+                  label: Memory Usage
 
   widgets.yaml: |
     - kubernetes:
