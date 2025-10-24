@@ -49,6 +49,16 @@ spec:
                 secretKeyRef:
                   name: homepage-secrets
                   key: HA_TOKEN
+            - name: HOMEPAGE_VAR_PROXMOX_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: homepage-secrets
+                  key: PROXMOX_USERNAME
+            - name: HOMEPAGE_VAR_PROXMOX_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: homepage-secrets
+                  key: PROXMOX_PASSWORD
           ports:
             - name: http
               containerPort: 3000
@@ -85,6 +95,9 @@ spec:
             - mountPath: /app/config/widgets.yaml
               name: homepage-config
               subPath: widgets.yaml
+            - mountPath: /app/config/proxmox.yaml
+              name: homepage-config
+              subPath: proxmox.yaml
             - mountPath: /app/config/logs
               name: logs
       volumes:

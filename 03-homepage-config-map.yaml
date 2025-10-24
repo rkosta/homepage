@@ -6,6 +6,11 @@ metadata:
   labels:
     app.kubernetes.io/name: homepage
 data:
+  proxmox.yaml: |
+    pve:
+      url: https://pve.teamnub.lan:8006
+      token: {{HOMEPAGE_VAR_PROXMOX_USERNAME}}
+      secret: {{HOMEPAGE_VAR_PROXMOX_PASSWORD}}
   kubernetes.yaml: |
     mode: cluster
     ingress: true
@@ -24,10 +29,22 @@ data:
             - abbr: GH
               href: https://github.com/rkosta/homepage
   services.yaml: |
+    # Example service entries referencing Proxmox VMs / LXC containers
+    - VMs:
+      - HomeAssistant:
+          icon: home-assistant.png
+          href: http://haos.teamnub.lan:8123/
+          description: Home automation
+          siteMonitor: http://haos.teamnub.lan:8123/
+          proxmoxNode: pve
+          proxmoxVMID: 102
+          showStats: true
+
     - Network Services:
         - PiHole:
             href: https://pihole.teamnub.lan/admin
             description: Network-wide ad blocking
+            icon: pi-hole.svg
             widget:
               type: pihole
               url: https://pihole.teamnub.lan
@@ -38,6 +55,7 @@ data:
         - OpenMediaVault:
             href: http://omv.teamnub.lan/
             description: Network Attached Storage
+            icon: openmediavault.svg
             widget:
               type: openmediavault
               url: http://omv.teamnub.lan/
@@ -49,6 +67,7 @@ data:
         - HomeAssistant:
             href: http://haos.teamnub.lan:8123/
             description: Home Automation Platform
+            icon: home-assistant.svg
             widget:
               type: homeassistant
               url: http://haos.teamnub.lan:8123
@@ -58,6 +77,17 @@ data:
                   label: CPU Usage
                 - state: sensor.home_assistant_core_memory_percent
                   label: Memory Usage
+    
+    - Hypervisors:
+        - Proxmox VE:
+            href: https://pve.teamnub.lan:8006
+            description: Virtualization Platform
+            icon: proxmox.svg
+            widget:
+              type: proxmox
+              url: https://pve.teamnub.lan:8006
+              username: {{HOMEPAGE_VAR_PROXMOX_USERNAME}}
+              password: {{HOMEPAGE_VAR_PROXMOX_PASSWORD}}
 
   widgets.yaml: |
     - kubernetes:
