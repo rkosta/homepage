@@ -45,6 +45,8 @@ The ConfigMap includes:
 - **Widgets**: Dashboard widgets for cluster stats, resource monitoring, and search
 - **Custom styling**: CSS and JavaScript customization files
 - **Kubernetes mode**: Cluster information display
+- **Proxmox integration**: Hypervisor monitoring and VM/container statistics
+- **Service integrations**: PiHole, OpenMediaVault, and Home Assistant widgets
 
 ### Resource Allocation
 - **Requests**: 100m CPU, 128Mi memory
@@ -93,6 +95,13 @@ The following credentials are encrypted in the SealedSecret:
    - Long-lived access token for Home Assistant API
    - Generate from your Home Assistant profile settings
 
+5. **Proxmox Username** (`PROXMOX_USERNAME`)
+   - API token ID in the format `user@realm!tokenid`
+   - Example: `homepage@pve!homepage-api`
+
+6. **Proxmox Password** (`PROXMOX_PASSWORD`)
+   - The secret value for the Proxmox API token
+
 #### How to Obtain Home Assistant Token
 
 To generate a long-lived access token for Home Assistant:
@@ -106,6 +115,41 @@ To generate a long-lived access token for Home Assistant:
 
 This token will be used in the ConfigMap to authenticate Homepage's requests to Home Assistant's API for displaying sensor data, entity states, and other information.
 
+#### How to Obtain Proxmox API Token
+
+To create an API token for Homepage in Proxmox VE:
+
+1. Log in to your Proxmox VE web interface
+2. Navigate to **Datacenter → Permissions → API Tokens**
+3. Click **Add** to create a new API token
+4. Configure the token:
+   - **User**: Select or create a user (e.g., `homepage@pve`)
+   - **Token ID**: Give it a descriptive name (e.g., `homepage-api`)
+   - **Privilege Separation**: Uncheck to use user permissions
+   - **Expire**: Set expiration date or leave empty for no expiration
+5. Click **Add** and **copy the secret immediately** (it won't be shown again)
+6. The username format will be: `username@realm!tokenid` (e.g., `homepage@pve!homepage-api`)
+
+**Required Permissions:**
+The Proxmox user needs the following permissions:
+- `VM.Audit` - View VM/LXC configurations and status
+- `Datastore.Audit` - View storage information
+- `Sys.Audit` - View node information
+
+You can create a custom role or use the built-in `PVEAuditor` role for read-only access.
+
+**Setting Permissions:**
+```bash
+# Create a user (if not exists)
+pveum user add homepage@pve
+
+# Create API token
+pveum user token add homepage@pve homepage-api
+
+# Grant PVEAuditor role to the user at datacenter level
+pveum acl modify / -user homepage@pve -role PVEAuditor
+```
+
 #### Updating Secrets
 
 If you need to update the credentials, you'll need to:
@@ -117,6 +161,8 @@ kubectl create secret generic homepage-secrets \
   --from-literal=OMV_USERNAME='your-omv-username' \
   --from-literal=OMV_PASSWORD='your-omv-password' \
   --from-literal=HA_TOKEN='your-home-assistant-token-here' \
+  --from-literal=PROXMOX_USERNAME='homepage@pve!homepage-api' \
+  --from-literal=PROXMOX_PASSWORD='your-proxmox-api-token-secret' \
   --dry-run=client -o yaml | \
   kubeseal -o yaml > 00-homepage-sealed-secret.yaml
 ```
@@ -202,6 +248,75 @@ Edit the `widgets.yaml` section to add or modify dashboard widgets. Available wi
 - Resource monitoring (CPU, memory, network)
 - Search engines
 - And many more (see [Homepage documentation](https://gethomepage.dev/))
+
+### Proxmox Integration
+
+This deployment includes comprehensive Proxmox VE integration configured in the ConfigMap.
+
+#### Global Proxmox Configuration
+
+The `proxmox.yaml` section in the ConfigMap defines the global connection settings:
+
+```yaml
+proxmox.yaml: |
+  pve:
+    url: https://pve.teamnub.lan:8006
+    token: {{HOMEPAGE_VAR_PROXMOX_USERNAME}}
+    secret: {{HOMEPAGE_VAR_PROXMOX_PASSWORD}}
+```
+
+This configuration is automatically populated from the sealed secrets and provides centralized authentication.
+
+#### Proxmox Widget
+
+Add a Proxmox widget to display overall hypervisor statistics:
+
+```yaml
+- Hypervisors:
+    - Proxmox VE:
+        href: https://pve.teamnub.lan:8006
+        description: Virtualization Platform
+        icon: proxmox.svg
+        widget:
+          type: proxmox
+          url: https://pve.teamnub.lan:8006
+          username: {{HOMEPAGE_VAR_PROXMOX_USERNAME}}
+          password: {{HOMEPAGE_VAR_PROXMOX_PASSWORD}}
+```
+
+This widget displays:
+- Cluster resource usage (CPU, memory, storage)
+- Number of VMs and containers
+- Node status
+
+#### Per-VM/Container Monitoring
+
+You can also monitor individual VMs or LXC containers by adding Proxmox-specific fields to service entries:
+
+```yaml
+- VMs:
+  - HomeAssistant:
+      icon: home-assistant.png
+      href: http://haos.teamnub.lan:8123/
+      description: Home automation
+      siteMonitor: http://haos.teamnub.lan:8123/
+      proxmoxNode: pve          # Proxmox node name
+      proxmoxVMID: 102          # VM or container ID
+      showStats: true           # Display resource statistics
+```
+
+This configuration will show:
+- VM/container status (running, stopped)
+- CPU and memory usage
+- Uptime
+- Network traffic
+
+To find your VMID, check the Proxmox web interface or run:
+```bash
+# On your Proxmox node
+qm list        # For VMs
+pct list       # For LXC containers
+```
 
 ## RBAC Permissions
 
