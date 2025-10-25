@@ -210,6 +210,10 @@ data:
         cpu: true
         memory: true
         network: default
+        cputemp: true
+        tempmin: 0 # optional, minimum cpu temp
+        tempmax: 100 # optional, maximum cpu 
+        uptime: true
     - search:
         provider: google
         target: _blank
