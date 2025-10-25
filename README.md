@@ -102,6 +102,31 @@ The following credentials are encrypted in the SealedSecret:
 6. **Proxmox Password** (`PROXMOX_PASSWORD`)
    - The secret value for the Proxmox API token
 
+7. **Tailscale API Token** (`TAILSCALE_API_TOKEN`)
+   - API token for Tailscale network integration
+   - Used to monitor Tailscale devices and connection status
+
+#### How to Obtain Tailscale API Token
+
+To create an API token for Homepage in Tailscale:
+
+1. Log in to the [Tailscale Admin Console](https://login.tailscale.com/admin)
+2. Navigate to **Settings → Keys**
+3. Click **Generate API key** or **Generate auth key**
+4. Configure the API key:
+   - **Description**: Give it a descriptive name (e.g., "Homepage Dashboard")
+   - **Expiration**: Set an expiration date or choose "No expiration"
+   - **Permissions**: Select appropriate read permissions for device and network information
+5. Click **Generate key** and **copy the token immediately** (it won't be shown again)
+6. The token will start with `tskey-api-`
+
+**Required Permissions:**
+The API token needs read-only access to:
+- Devices - View device information and status
+- Network - View network configuration
+
+**Security Note:** Tailscale API keys provide access to your tailnet information. Use read-only permissions when possible and store the token securely.
+
 #### How to Obtain Home Assistant Token
 
 To generate a long-lived access token for Home Assistant:
@@ -163,6 +188,7 @@ kubectl create secret generic homepage-secrets \
   --from-literal=HA_TOKEN='your-home-assistant-token-here' \
   --from-literal=PROXMOX_USERNAME='homepage@pve!homepage-api' \
   --from-literal=PROXMOX_PASSWORD='your-proxmox-api-token-secret' \
+  --from-literal=TAILSCALE_API_TOKEN='your-tailscale-api-token-here' \
   --dry-run=client -o yaml | \
   kubeseal -o yaml > 00-homepage-sealed-secret.yaml
 ```
