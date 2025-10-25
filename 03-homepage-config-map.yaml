@@ -21,6 +21,16 @@ data:
     theme: dark  # or light
     color: slate  # slate, gray, zinc, neutral, stone, etc.
     headerStyle: boxed  # boxed, underlined, clean
+    layout:
+      Tailscale:
+        style: row
+        columns: 4
+      VMs:
+        style: row
+        columns: 3
+      LXCs:
+        style: row
+        columns: 2
   custom.css: ""
   custom.js: ""
   bookmarks.yaml: |
@@ -122,6 +132,64 @@ data:
           proxmoxVMID: 108
           showStats: true
           proxmoxType: lxc
+
+    - Tailscale:  
+        - haos:
+            href: https://login.tailscale.com/admin/machines
+            description: Home Assistant OS
+            icon: tailscale.svg
+            widget:
+              type: tailscale
+              deviceid: ny681KP3XR11CNTRL
+              key: {{HOMEPAGE_VAR_TAILSCALE_API_TOKEN}}
+        - pikube:
+            href: https://login.tailscale.com/admin/machines
+            description: Raspberry Pi 5 - kubernetes
+            icon: tailscale.svg
+            widget:
+              type: tailscale
+              deviceid: ndP8Jeapze11CNTRL
+              key: {{HOMEPAGE_VAR_TAILSCALE_API_TOKEN}}
+        - Imagine Peak:
+            href: https://login.tailscale.com/admin/machines
+            description: Imagine Peak Windows 11
+            icon: tailscale.svg
+            widget:
+              type: tailscale
+              deviceid: nkqvQQxEzx11CNTRL
+              key: {{HOMEPAGE_VAR_TAILSCALE_API_TOKEN}}
+        - Macbook:
+            href: https://login.tailscale.com/admin/machines
+            description: Personal Macbook Air
+            icon: tailscale.svg
+            widget:
+              type: tailscale
+              deviceid: nJKdoW9mRc11CNTRL
+              key: {{HOMEPAGE_VAR_TAILSCALE_API_TOKEN}}
+        - NUC Box:
+            href: https://login.tailscale.com/admin/machines
+            description: Nuc Box Windows 11
+            icon: tailscale.svg
+            widget:
+              type: tailscale
+              deviceid: nE1zWDXztW11CNTRL
+              key: {{HOMEPAGE_VAR_TAILSCALE_API_TOKEN}}
+        - One Plus Pad:
+            href: https://login.tailscale.com/admin/machines
+            description: One Plus Pad Tablet ANdroid
+            icon: tailscale.svg
+            widget:
+              type: tailscale
+              deviceid: nMN6HBPHH721CNTRL
+              key: {{HOMEPAGE_VAR_TAILSCALE_API_TOKEN}}
+        - Samsung S24 Plus:
+            href: https://login.tailscale.com/admin/machines
+            description: Samsung S24 Plus Android Phone
+            icon: tailscale.svg
+            widget:
+              type: tailscale
+              deviceid: nWTpm2ubKr11CNTRL
+              key: {{HOMEPAGE_VAR_TAILSCALE_API_TOKEN}}
 
   widgets.yaml: |
     - kubernetes:
